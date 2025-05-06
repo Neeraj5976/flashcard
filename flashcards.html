@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Flashcards</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+  <style>
+    :root {
+      --primary: #7c3aed;
+      --primary-dark: #6d28d9;
+      --correct: #10b981;
+      --incorrect: #ef4444;
+      --bg-gradient: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+      --card-gradient: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+      --frosted-bg: rgba(30, 41, 59, 0.4);
+      --frosted-border: rgba(255,255,255,0.1);
+      --text-dark: #f8fafc;
+      --text-light: #f8fafc;
+      --score-bg: rgba(124, 58, 237, 0.1);
+      --progress-bg: #334155;
+      --progress-fg: #7c3aed;
+      --card-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+      --hover-glow: 0 0 20px rgba(124, 58, 237, 0.3);
+    }
+    html, body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      min-height: 100vh;
+      background: var(--bg-gradient);
+      font-family: 'Segoe UI', 'Roboto', Arial, sans-serif;
+      color: var(--text-dark);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow-x: hidden;
+    }
+    .container {
+      display: flex;
+      gap: 2.5rem;
+      background: var(--frosted-bg);
+      border-radius: 2rem;
+      box-shadow: var(--card-shadow);
+      border: 1px solid var(--frosted-border);
+      backdrop-filter: blur(16px) saturate(180%);
+      padding: 2.5rem 2rem;
+      min-width: 700px;
+      max-width: 900px;
+      align-items: center;
+      transform: translateY(0);
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      will-change: transform;
+    }
+    .container:hover {
+      transform: translateY(-5px);
+      box-shadow: var(--hover-glow);
+    }
+    .flashcard-section {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-width: 340px;
+    }
+    .card-count {
+      margin-bottom: 1rem;
+      font-size: 1.1rem;
+      letter-spacing: 0.5px;
+      color: var(--primary-dark);
+      font-weight: 500;
+    }
+    .flashcard {
+      width: 340px;
+      height: 220px;
+      perspective: 1200px;
+      margin-bottom: 1.2rem;
+      cursor: pointer;
+      position: relative;
+      user-select: none;
+      transform-style: preserve-3d;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      transform-origin: center;
+      margin: 0 auto;
+      will-change: transform;
+    }
+    .flashcard:hover {
+      transform: translateY(-5px);
+      box-shadow: var(--hover-glow);
+    }
+    .flashcard-inner {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      transition: transform 0.7s cubic-bezier(.4,2,.3,1);
+      transform-style: preserve-3d;
+      transform-origin: center;
+      backface-visibility: hidden;
+      will-change: transform;
+    }
+    .flashcard.flipped .flashcard-inner {
+      transform: rotateY(180deg);
+    }
+    .flashcard-front, .flashcard-back {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      backface-visibility: hidden;
+      background: var(--card-gradient);
+      border-radius: 1.2rem;
+      box-shadow: var(--card-shadow);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.35rem;
+      padding: 1.5rem 1.2rem 2.2rem 1.2rem;
+      color: var(--text-dark);
+      font-weight: 500;
+      position: absolute;
+      top: 0; left: 0;
+      backface-visibility: hidden;
+      border: 1px solid var(--frosted-border);
+    }
+    .flashcard-back {
+      transform: rotateY(180deg);
+    }
+    .flip-hint {
+      position: absolute;
+      bottom: 1.1rem;
+      left: 0;
+      width: 100%;
+      text-align: center;
+      font-size: 0.98rem;
+      color: #6c757d;
+      letter-spacing: 0.2px;
+      pointer-events: none;
+      opacity: 0.85;
+      font-weight: 400;
+    }
+    .progress-bar {
+      width: 100%;
+      height: 12px;
+      background: var(--progress-bg);
+      border-radius: 8px;
+      overflow: hidden;
+      margin-bottom: 1.2rem;
+      box-shadow: var(--card-shadow);
+      border: 1px solid var(--frosted-border);
+    }
+    .progress {
+      height: 100%;
+      background: var(--progress-fg);
+      transition: width 0.4s cubic-bezier(.4,2,.3,1);
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(124, 58, 237, 0.3);
+    }
+    .ui-section {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-width: 220px;
+      gap: 1.2rem;
+    }
+    .button-row {
+      display: flex;
+      flex-direction: row;
+      gap: 1.2rem;
+      width: 100%;
+      justify-content: center;
+    }
+    .ui-btn {
+      background: var(--primary);
+      color: var(--text-light);
+      border: none;
+      border-radius: 0.7rem;
+      padding: 0.7rem 1.3rem;
+      font-size: 1.25rem;
+      font-weight: 500;
+      cursor: pointer;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      outline: none;
+      position: relative;
+      overflow: hidden;
+      will-change: transform;
+    }
+    .ui-btn::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 0;
+      height: 0;
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 50%;
+      transform: translate(-50%, -50%);
+      transition: width 0.3s ease, height 0.3s ease;
+    }
+    .ui-btn:hover:not(:disabled)::after {
+      width: 200%;
+      height: 200%;
+    }
+    .ui-btn:active {
+      transform: scale(0.97);
+    }
+    .ui-btn:hover:not(:disabled) {
+      background: var(--primary-dark);
+      transform: translateY(-2px);
+      box-shadow: var(--hover-glow);
+    }
+    .ui-btn[disabled] {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+    .ui-btn.correct {
+      background: var(--correct);
+    }
+    .ui-btn.correct:hover:not(:disabled) {
+      background: #059669;
+    }
+    .ui-btn.incorrect {
+      background: var(--incorrect);
+    }
+    .ui-btn.incorrect:hover:not(:disabled) {
+      background: #dc2626;
+    }
+    .score-section {
+      background: var(--score-bg);
+      border-radius: 1rem;
+      padding: 1.1rem 1.5rem 1.1rem 1.5rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-top: 0.5rem;
+      min-width: 120px;
+      box-shadow: var(--card-shadow);
+      border: 1px solid var(--frosted-border);
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      will-change: transform;
+    }
+    .score-section:hover {
+      transform: translateY(-3px);
+      box-shadow: var(--hover-glow);
+    }
+    .score-label {
+      font-size: 1.05rem;
+      color: #6c757d;
+      margin-bottom: 0.5rem;
+      font-weight: 500;
+    }
+    .score-values {
+      display: flex;
+      flex-direction: row;
+      gap: 1.5rem;
+      align-items: center;
+    }
+    .score-value {
+      font-size: 2.2rem;
+      font-weight: 700;
+      min-width: 38px;
+      text-align: center;
+    }
+    .score-value.correct {
+      color: var(--correct);
+      text-shadow: 0 1px 4px #43aa8b33;
+    }
+    .score-value.incorrect {
+      color: var(--incorrect);
+      text-shadow: 0 1px 4px #f9414433;
+    }
+    @media (max-width: 900px) {
+      .container {
+        flex-direction: column;
+        min-width: 340px;
+        max-width: 98vw;
+        padding: 1.2rem 0.5rem;
+      }
+      .ui-section {
+        min-width: unset;
+        width: 100%;
+      }
+      .flashcard-section {
+        min-width: unset;
+      }
+    }
+    /* Confetti styles */
+    .confetti {
+      pointer-events: none;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: 9999;
+      overflow: hidden;
+      pointer-events: none;
+    }
+    .confetti-piece {
+      position: absolute;
+      width: 12px;
+      height: 18px;
+      border-radius: 3px;
+      opacity: 0.85;
+      will-change: transform;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="flashcard-section">
+      <div class="card-count" id="cardCount">Card 1 of 5</div>
+      <div class="flashcard" id="flashcard">
+        <div class="flashcard-inner">
+          <div class="flashcard-front">
+            <span id="question">Question?</span>
+            <div class="flip-hint"><i class="fa-solid fa-rotate"></i> Click to flip</div>
+          </div>
+          <div class="flashcard-back">
+            <span id="answer">Answer!</span>
+            <div class="flip-hint"><i class="fa-solid fa-rotate"></i> Click to flip</div>
+          </div>
+        </div>
+      </div>
+      <div class="progress-bar">
+        <div class="progress" id="progress" style="width: 0%"></div>
+      </div>
+    </div>
+    <div class="ui-section">
+      <div class="button-row">
+        <button class="ui-btn" id="prevBtn"><i class="fa-solid fa-arrow-left"></i> Previous</button>
+        <button class="ui-btn" id="nextBtn">Next <i class="fa-solid fa-arrow-right"></i></button>
+      </div>
+      <div class="button-row">
+        <button class="ui-btn" id="correctBtn"><i class="fa-solid fa-check"></i> Correct</button>
+        <button class="ui-btn" id="incorrectBtn"><i class="fa-solid fa-xmark"></i> Incorrect</button>
+      </div>
+      <div class="score-section">
+        <div class="score-label">Score</div>
+        <div class="score-values">
+          <span class="score-value correct" id="scoreCorrect">0</span>
+          <span class="score-value incorrect" id="scoreIncorrect">0</span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="confetti" id="confetti"></div>
+  <script>
+    // Flashcard data
+    const flashcards = [
+      { q: "Is 'null' an object in JavaScript?", a: "No, it's a primitive value", correct: true },
+      { q: "Does JavaScript support multiple inheritance?", a: "No, it uses prototypal inheritance", correct: true },
+      { q: "Is 'undefined' a reserved word in JavaScript?", a: "No, it's a property of the global object", correct: true },
+      { q: "Can you modify the value of 'const' variables after declaration?", a: "No, they are immutable", correct: true },
+      { q: "Is 'NaN' equal to itself in JavaScript?", a: "No, NaN !== NaN", correct: true },
+      { q: "Does JavaScript have block scope for variables declared with 'var'?", a: "No, it has function scope", correct: false },
+      { q: "Is 'this' always bound to the object in which it is defined?", a: "No, it depends on how the function is called", correct: false },
+      { q: "Can you use 'await' outside of an async function?", a: "No, it must be inside an async function", correct: false },
+      { q: "Is JavaScript a single-threaded language?", a: "Yes, it has a single call stack", correct: false },
+      { q: "Does JavaScript have a built-in module system?", a: "Yes, ES6 introduced import/export", correct: false }
+    ];
+    const totalCards = flashcards.length;
+    let current = 0;
+    let flipped = false;
+    // Track answers: null = not answered, true = correct, false = incorrect
+    let answers = Array(totalCards).fill(null);
+    let score = { correct: 0, incorrect: 0 };
+    // DOM elements
+    const flashcard = document.getElementById('flashcard');
+    const question = document.getElementById('question');
+    const answer = document.getElementById('answer');
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    const correctBtn = document.getElementById('correctBtn');
+    const incorrectBtn = document.getElementById('incorrectBtn');
+    const scoreCorrect = document.getElementById('scoreCorrect');
+    const scoreIncorrect = document.getElementById('scoreIncorrect');
+    const cardCount = document.getElementById('cardCount');
+    const progress = document.getElementById('progress');
+    const confetti = document.getElementById('confetti');
+
+    function updateCard() {
+      question.textContent = flashcards[current].q;
+      answer.textContent = flashcards[current].a;
+      cardCount.textContent = `Card ${current + 1} of ${totalCards}`;
+      // Progress bar
+      progress.style.width = `${((current + 1) / totalCards) * 100}%`;
+      // Reset flip
+      flashcard.classList.remove('flipped');
+      flipped = false;
+      // Update buttons
+      updateAnswerButtons();
+    }
+
+    function updateScore() {
+      scoreCorrect.textContent = score.correct;
+      scoreIncorrect.textContent = score.incorrect;
+    }
+
+    function updateAnswerButtons() {
+      const ans = answers[current];
+      correctBtn.classList.remove('correct', 'incorrect');
+      incorrectBtn.classList.remove('correct', 'incorrect');
+      correctBtn.disabled = false;
+      incorrectBtn.disabled = false;
+      if (ans === true) {
+        correctBtn.classList.add('correct');
+        correctBtn.disabled = true;
+        incorrectBtn.classList.remove('incorrect');
+        incorrectBtn.disabled = false;
+      } else if (ans === false) {
+        incorrectBtn.classList.add('incorrect');
+        incorrectBtn.disabled = true;
+        correctBtn.classList.remove('correct');
+        correctBtn.disabled = false;
+      }
+      // Prevent double marking
+      if (ans !== null) {
+        // Only allow changing to the other option
+        if (ans === true) incorrectBtn.disabled = false;
+        if (ans === false) correctBtn.disabled = false;
+      }
+    }
+
+    function markAnswer(isCorrect) {
+      const prev = answers[current];
+      if (prev === isCorrect) return; // Already marked as this
+      if (prev === null) {
+        // First time marking
+        answers[current] = isCorrect;
+        if (isCorrect === flashcards[current].correct) {
+          score.correct++;
+        } else {
+          score.incorrect++;
+        }
+      } else {
+        // Changing answer
+        answers[current] = isCorrect;
+        if (isCorrect === flashcards[current].correct) {
+          score.correct++;
+          score.incorrect--;
+        } else {
+          score.incorrect++;
+          score.correct--;
+        }
+      }
+      updateScore();
+      updateAnswerButtons();
+      // Auto-advance
+      setTimeout(() => {
+        nextCard();
+      }, 350);
+      // Confetti if all correct
+      if (answers.every((a, i) => a === flashcards[i].correct)) {
+        launchConfetti();
+      }
+    }
+
+    function nextCard() {
+      current = (current + 1) % totalCards;
+      updateCard();
+    }
+    function prevCard() {
+      current = (current - 1 + totalCards) % totalCards;
+      updateCard();
+    }
+
+    flashcard.addEventListener('click', () => {
+      flipped = !flipped;
+      flashcard.classList.toggle('flipped', flipped);
+    });
+    nextBtn.addEventListener('click', nextCard);
+    prevBtn.addEventListener('click', prevCard);
+    correctBtn.addEventListener('click', () => markAnswer(true));
+    incorrectBtn.addEventListener('click', () => markAnswer(false));
+
+    // Keyboard navigation
+    document.addEventListener('keydown', e => {
+      if (e.key === 'ArrowRight') nextCard();
+      if (e.key === 'ArrowLeft') prevCard();
+      if (e.key === ' ') flashcard.click();
+    });
+
+    // Confetti animation
+    function launchConfetti() {
+      confetti.innerHTML = '';
+      const colors = [
+        'var(--primary)', 'var(--correct)', 'var(--incorrect)', '#f9c74f', '#90be6d', '#577590'
+      ];
+      const pieces = 60;
+      for (let i = 0; i < pieces; i++) {
+        const el = document.createElement('div');
+        el.className = 'confetti-piece';
+        el.style.background = colors[Math.floor(Math.random() * colors.length)];
+        el.style.left = Math.random() * 100 + 'vw';
+        el.style.top = '-2vh';
+        el.style.transform = `rotate(${Math.random() * 360}deg)`;
+        el.style.opacity = 0.7 + Math.random() * 0.3;
+        confetti.appendChild(el);
+        // Animate
+        setTimeout(() => {
+          el.style.transition = 'top 2.2s cubic-bezier(.4,2,.3,1), left 2.2s cubic-bezier(.4,2,.3,1), transform 2.2s';
+          el.style.top = 90 + 10 * Math.random() + 'vh';
+          el.style.left = (parseFloat(el.style.left) + (Math.random() - 0.5) * 30) + 'vw';
+          el.style.transform = `rotate(${Math.random() * 720}deg)`;
+        }, 10);
+        // Remove after
+        setTimeout(() => {
+          el.remove();
+        }, 2500);
+      }
+    }
+
+    // Init
+    updateCard();
+    updateScore();
+  </script>
+</body>
+</html> 
