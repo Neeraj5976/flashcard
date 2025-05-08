@@ -1,3 +1,4 @@
+<!-- /flashcards.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -63,6 +64,7 @@
       flex-direction: column;
       align-items: center;
       min-width: 340px;
+      margin-left: 20px;
     }
     .card-count {
       margin-bottom: 1rem;
@@ -70,6 +72,7 @@
       letter-spacing: 0.5px;
       color: var(--primary-dark);
       font-weight: 500;
+      margin-bottom: 46px;
     }
     .flashcard {
       width: 340px;
@@ -84,6 +87,9 @@
       transform-origin: center;
       margin: 0 auto;
       will-change: transform;
+      display: flex;
+      justify-content: center;
+      align-items: center;
     }
     .flashcard:hover {
       transform: translateY(-5px);
@@ -98,6 +104,9 @@
       transform-origin: center;
       backface-visibility: hidden;
       will-change: transform;
+      display: flex;
+      justify-content: center;
+      align-items: center;
     }
     .flashcard.flipped .flashcard-inner {
       transform: rotateY(180deg);
@@ -118,10 +127,9 @@
       padding: 1.5rem 1.2rem 2.2rem 1.2rem;
       color: var(--text-dark);
       font-weight: 500;
-      position: absolute;
-      top: 0; left: 0;
       backface-visibility: hidden;
       border: 1px solid var(--frosted-border);
+      transform-style: preserve-3d;
     }
     .flashcard-back {
       transform: rotateY(180deg);
@@ -148,6 +156,7 @@
       margin-bottom: 1.2rem;
       box-shadow: var(--card-shadow);
       border: 1px solid var(--frosted-border);
+      margin-top: 50px;
     }
     .progress {
       height: 100%;
@@ -183,11 +192,13 @@
       transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
       display: flex;
       align-items: center;
+      justify-content: center;
       gap: 0.6rem;
       outline: none;
       position: relative;
       overflow: hidden;
       will-change: transform;
+      width: 140px;
     }
     .ui-btn::after {
       content: '';

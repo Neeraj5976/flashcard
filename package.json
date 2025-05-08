@@ -1,0 +1,19 @@
+{
+  "name": "flashcard",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "cypress run",
+    "cypress:open": "cypress open",
+    "cypress:run": "cypress run",
+    "start": "kill -9 $(lsof -t -i:3001) 2>/dev/null || true && http-server -p 3001 -a localhost -c-1 --cors -o flashcards.html"
+  },
+  "author": "",
+  "license": "ISC",
+  "keywords": [],
+  "description": "",
+  "devDependencies": {
+    "cypress": "^13.6.6",
+    "http-server": "^14.1.1"
+  }
+}
