@@ -362,17 +362,57 @@
   <script>
     // Flashcard data
     const flashcards = [
-      { q: "Is 'null' an object in JavaScript?", a: "No, it's a primitive value", correct: true },
-      { q: "Does JavaScript support multiple inheritance?", a: "No, it uses prototypal inheritance", correct: true },
-      { q: "Is 'undefined' a reserved word in JavaScript?", a: "No, it's a property of the global object", correct: true },
-      { q: "Can you modify the value of 'const' variables after declaration?", a: "No, they are immutable", correct: true },
-      { q: "Is 'NaN' equal to itself in JavaScript?", a: "No, NaN !== NaN", correct: true },
-      { q: "Does JavaScript have block scope for variables declared with 'var'?", a: "No, it has function scope", correct: false },
-      { q: "Is 'this' always bound to the object in which it is defined?", a: "No, it depends on how the function is called", correct: false },
-      { q: "Can you use 'await' outside of an async function?", a: "No, it must be inside an async function", correct: false },
-      { q: "Is JavaScript a single-threaded language?", a: "Yes, it has a single call stack", correct: false },
-      { q: "Does JavaScript have a built-in module system?", a: "Yes, ES6 introduced import/export", correct: false }
-    ];
+        {
+          q: "The Great Wall of China is visible from space with the naked eye.",
+          a: "Incorrect, it's a myth",
+          correct: false,
+        },
+        {
+          q: "The capital of Australia is Sydney.",
+          a: "Incorrect, it's Canberra",
+          correct: false,
+        },
+        {
+          q: "Water boils at 100°C at sea level.",
+          a: "Correct, under standard atmospheric pressure",
+          correct: true,
+        },
+        {
+          q: "Shakespeare wrote the play 'Hamlet'.",
+          a: "Correct, it's one of his most famous works",
+          correct: true,
+        },
+        {
+          q: "The human body has four lungs.",
+          a: "Incorrect, it has two lungs",
+          correct: false,
+        },
+        {
+          q: "The currency of Japan is the Yen.",
+          a: "Correct, it's the official currency",
+          correct: true,
+        },
+        {
+          q: "Lightning never strikes the same place twice.",
+          a: "Incorrect, it often does",
+          correct: false,
+        },
+        {
+          q: "The Earth revolves around the Sun.",
+          a: "Correct, it completes one orbit every year",
+          correct: true,
+        },
+        {
+          q: "Mount Everest is the tallest mountain above sea level.",
+          a: "Correct, it stands over 8,848 meters tall",
+          correct: true,
+        },
+        {
+          q: "Penguins are found at the North Pole.",
+          a: "Incorrect, they live in the Southern Hemisphere",
+          correct: false,
+        },
+      ];
     const totalCards = flashcards.length;
     let current = 0;
     let flipped = false;
