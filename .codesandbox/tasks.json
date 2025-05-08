@@ -1,0 +1,33 @@
+{
+  // These tasks will run in order when initializing your CodeSandbox project.
+  "setupTasks": [
+    {
+      "name": "Installing Dependencies",
+      "command": "npm install"
+    }
+  ],
+
+  // These tasks can be run from CodeSandbox. Running one will open a log in the app.
+  "tasks": {
+    "test": {
+      "name": "test",
+      "command": "pnpm test"
+    },
+    "cypress:open": {
+      "name": "cypress:open",
+      "command": "pnpm cypress:open"
+    },
+    "cypress:run": {
+      "name": "cypress:run",
+      "command": "pnpm cypress:run"
+    },
+    "start": {
+      "name": "start",
+      "command": "npm start",
+      "runAtStart": true,
+      "preview": {
+        "port": 3001
+      }
+    }
+  }
+}
